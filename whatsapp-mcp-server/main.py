@@ -14,6 +14,19 @@ from whatsapp import (
     send_audio_message as whatsapp_audio_voice_message,
     download_media as whatsapp_download_media
 )
+import logging
+import sys
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 # Initialize FastMCP server
 mcp = FastMCP("whatsapp")
@@ -247,5 +260,9 @@ def download_media(message_id: str, chat_jid: str) -> Dict[str, Any]:
         }
 
 if __name__ == "__main__":
-    # Initialize and run the server
-    mcp.run(transport='stdio')
+    try:
+        logger.info("Starting WhatsApp MCP server...")
+        mcp.run(transport='stdio')  # Remove debug=True
+    except Exception as e:
+        logger.error(f"Error starting server: {e}", exc_info=True)
+        sys.exit(1)
